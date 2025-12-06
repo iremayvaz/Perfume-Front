@@ -85,7 +85,6 @@ const Quantity = ({ isEditable, itemId, itemQuantity, onIncrease = () => {}, onD
             <IconButton onClick={() => onDecrease(itemId)}>
                 <RemoveIcon fontSize='small' />
             </IconButton>
-
             <Typography fontWeight='bold' width={20} textAlign='center'>
                 {itemQuantity}
             </Typography>

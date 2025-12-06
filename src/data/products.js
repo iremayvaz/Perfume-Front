@@ -14,7 +14,7 @@ export const dummyProducts = [
         brand: 'Chanel',
         price: 2100,
         intensity: 'Eau de Toilette',
-        image: 'https://productimages.hepsiburada.net/s/121/424-600/110000071160168.jpg/format:webp',
+        image: '',
         quantity: 1,
     },
     {

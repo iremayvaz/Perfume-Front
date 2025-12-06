@@ -3,6 +3,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useNavigate } from 'react-router-dom';
 
+
 function ProductCard({ products = [] }) {
   const navigate = useNavigate();
 
@@ -44,15 +45,15 @@ function ProductCard({ products = [] }) {
 
               {/* ÜRÜN RESMİ */}
               <Box sx={{ height: 200, background: '#fafafa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {product.image && (
-                  <img src={product.image} alt={product.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-                )}
+                  <img src={product.image ?? 'https://productimages.hepsiburada.net/s/121/424-600/110000071160168.jpg/format:webp'} alt={product.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
               </Box>
 
               <CardContent>
+                <b>Rating: {product.rating}</b>
                 {/* ÜRÜN ADI */}
                 <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  {product.name}
+                  <b>{product.brandName}</b>
+                  {product.productName}
                 </Typography>
 
                 {/* FİYAT ALANI */}
