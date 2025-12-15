@@ -1,9 +1,31 @@
 import axios from "../utils/axios";
 
 export const getProducts = async () => {
-    return await axios.get("/perfume/list").then((response) => response.data);
+    try {
+        const res = await axios.get("/perfume/list");
+        return {
+            success: true,
+            data: res.data,
+        };
+    } catch (err) {
+        return {
+            success: false,
+            message: err.response?.data?.message || "Ürünler alınamadı",
+        };
+    }
 };
 
 export const getProductDetail = async (id) => {
-    return axios.get(`/perfume/${id}`);
+    try {
+        const res = await axios.get(`/perfume/${id}`);
+        return {
+            success: true,
+            data: res.data,
+        };
+    } catch (err) {
+        return {
+            success: false,
+            message: err.response?.data?.message || "Ürün detayı alınamadı",
+        };
+    }
 };

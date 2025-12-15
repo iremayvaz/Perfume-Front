@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Container, Box, IconButton, Drawer, List, ListItem, ListItemText } from '@mui/material';
+import { AppBar, Toolbar, Typography, Container, Box, IconButton, Drawer, List, ListItem, ListItemText, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Outlet } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +18,9 @@ export default function Layout() {
                     <Typography variant='h6' sx={{ flexGrow: 1 }}>
                         Perfume Store
                     </Typography>
+                    <Button color='inherit' onClick={() => navigate('/cart')}>
+                        Sepetim
+                    </Button>
                 </Toolbar>
             </AppBar>
 

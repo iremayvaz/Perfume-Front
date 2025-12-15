@@ -1,38 +1,94 @@
-import { Card, CardContent, CardMedia, IconButton, Typography, Box } from '@mui/material';
+import { Card, CardContent, IconButton, Typography, Box } from '@mui/material';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { dummyProducts } from '../data/products';
-import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useAuth } from '../auth/AuthContext';
+import { removeFromCart, updateCartItemQuantity, viewCart } from '../api/cartApi';
 
-export default function CartPage({ cartItems = dummyProducts, isOrderHistoryPage = false, onIncrease = () => {}, onDecrease = () => {}, onRemove = () => {} }) {
-    const { id } = useParams();
-    const [products, setProducts] = useState([]);
-    const total = products.reduce((acc, item) => acc + item.price * item.quantity, 0);
+export default function CartPage({ isOrderHistoryPage = false }) {
+    const { user } = useAuth();
+    const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    const total = items.reduce((acc, item) => acc + item.subTotal, 0);
+
+    const onIncrease = async (itemId) => {
+        const prevItems = [...items];
+
+        setItems((prev) => prev.map((i) => (i.itemId === itemId ? { ...i, quantity: i.quantity + 1, subTotal: (i.quantity + 1) * i.unitPriceSnapshot } : i)));
+
+        const target = prevItems.find((i) => i.itemId === itemId);
+        const newQty = target.quantity + 1;
+
+        const res = await updateCartItemQuantity(user?.id ?? 1, itemId, newQty);
+
+        if (!res.success) {
+            // ❌ rollback
+            setItems(prevItems);
+        } else {
+            setItems(res.data.cartItems);
+        }
+    };
+
+    const onDecrease = async (itemId) => {
+        const prevItems = [...items];
+        const target = prevItems.find((i) => i.itemId === itemId);
+
+        if (target.quantity === 1) return;
+
+        setItems((prev) => prev.map((i) => (i.itemId === itemId ? { ...i, quantity: i.quantity - 1, subTotal: (i.quantity - 1) * i.unitPriceSnapshot } : i)));
+
+        const res = await updateCartItemQuantity(user?.id ?? 1, itemId, target.quantity - 1);
+
+        if (!res.success) {
+            // ❌ rollback
+            setItems(prevItems);
+        } else {
+            setItems(res.data.cartItems);
+        }
+    };
+
+    const handleRemoveProduct = async (itemId) => {
+        const res = await removeFromCart(user?.id ?? 1, itemId);
+
+        if (res.success) {
+            const refreshed = await viewCart(user?.id ?? 1);
+            setItems(refreshed.data);
+        }
+    };
 
     useEffect(() => {
-        if (isOrderHistoryPage && id) {
-            // fetch order details by id from backend in real scenario
-            setProducts(cartItems);
-        } else {
-            // fetch cart items from backend in real scenario
-            setProducts(cartItems);
-        }
-    }, [isOrderHistoryPage, id]);
+        const fetchCart = async () => {
+            setLoading(true);
+            const res = await viewCart(user?.id ?? 1);
+            setItems(res.data ?? []);
+            setLoading(false);
+        };
+
+        fetchCart();
+    }, [user?.id]);
+
+    if (loading) {
+        return (
+            <Typography textAlign='center' mt={4}>
+                Sepet yükleniyor...
+            </Typography>
+        );
+    }
 
     return (
         <Box sx={{ maxWidth: 800, mx: 'auto', p: 2 }}>
             <Typography variant='h4' fontWeight='bold' mb={3}>
-                {isOrderHistoryPage ? 'Sipariş Detayı' : 'Sepetim'}
+                Sepetim
             </Typography>
 
-            {products.length === 0 && <Typography color='text.secondary'>{isOrderHistoryPage ? 'Henüz siparişiniz yok.' : 'Sepetiniz boş.'}</Typography>}
+            {items.length === 0 && <Typography color='text.secondary'>Sepetiniz boş.</Typography>}
 
             <Box display='flex' flexDirection='column' gap={2}>
-                {products.map((item) => (
+                {items.map((item) => (
                     <Card
-                        key={item.id}
+                        key={item.itemId}
                         sx={{
                             display: 'flex',
                             alignItems: 'center',
@@ -40,29 +96,22 @@ export default function CartPage({ cartItems = dummyProducts, isOrderHistoryPage
                             gap: 2,
                         }}
                     >
-                        {/* Küçültülmüş ürün görseli */}
-                        <CardMedia component='img' sx={{ width: 64, height: 64, borderRadius: 1, objectFit: 'cover' }} image={item.image} alt={item.name} />
-
-                        {/* Ürün bilgileri */}
                         <CardContent sx={{ flex: 1, p: 0 }}>
-                            <Typography variant='h6'>{item.name}</Typography>
+                            <Typography variant='h6'>{item.productName}</Typography>
+
                             <Typography variant='body2' color='text.secondary'>
-                                Marka: {item.brand}
+                                Birim Fiyat: {item.unitPriceSnapshot} {item.currency}
                             </Typography>
-                            <Typography variant='body2' color='text.secondary'>
-                                Yoğunluk: {item.intensity}
-                            </Typography>
-                            <Typography variant='subtitle1' fontWeight='bold' mt={0.5}>
-                                {item.price} TL
+
+                            <Typography variant='subtitle1' fontWeight='bold'>
+                                Ara Toplam: {item.subTotal} {item.currency}
                             </Typography>
                         </CardContent>
 
-                        {/* Adet */}
-                        <Quantity isEditable={!isOrderHistoryPage} itemId={item.id} itemQuantity={item.quantity} onIncrease={onIncrease} onDecrease={onDecrease} />
+                        <Quantity isEditable={!isOrderHistoryPage} itemId={item.itemId} itemQuantity={item.quantity} onIncrease={onIncrease} onDecrease={onDecrease} />
 
-                        {/* Sepetten çıkar */}
                         {!isOrderHistoryPage && (
-                            <IconButton color='error' onClick={() => onRemove(item.id)} sx={{ ml: 1 }}>
+                            <IconButton color='error' onClick={() => handleRemoveProduct(item.itemId)}>
                                 <DeleteForeverIcon />
                             </IconButton>
                         )}
@@ -70,9 +119,9 @@ export default function CartPage({ cartItems = dummyProducts, isOrderHistoryPage
                 ))}
             </Box>
 
-            {products.length > 0 && (
+            {items.length > 0 && (
                 <Typography variant='h5' textAlign='right' mt={3} fontWeight='bold'>
-                    Toplam: {total} TL
+                    Toplam: {total} TRY
                 </Typography>
             )}
         </Box>

@@ -1,42 +1,79 @@
 import { useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import ProductFilter from '../components/ProductFilter';
-import { dummyProducts } from '../data/products';
-import { Container, Typography, Paper, Box } from '@mui/material';
+import { Container, Typography, Box } from '@mui/material';
 import { getProducts } from '../api/productApi';
-import { CleaningServices } from '@mui/icons-material';
-
-const brands = [...new Set(dummyProducts.map((p) => p.brand))];
-const intensities = [...new Set(dummyProducts.map((p) => p.intensity))];
+import { dummyProducts } from '../data/products';
 
 function HomePage() {
-    const [filters, setFilters] = useState({ brand: '', intensity: '', minPrice: '', maxPrice: '' });
-    const [products, setProducts] = useState(dummyProducts);
+    const [filters, setFilters] = useState({
+        brand: '',
+        intensity: '',
+        minPrice: '',
+        maxPrice: '',
+    });
+
+    const [products, setProducts] = useState([]);
+    const [error, setError] = useState('');
+    console.log({ products });
+
+    const brands = [...new Set(products?.map((p) => p.brand))];
+    const intensities = [...new Set(products?.map((p) => p.intensity))];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFilters((prev) => ({ ...prev, [name]: value }));
     };
-    
-    const handleFilter = (e) => {
+
+    const handleFilter = async (e) => {
         e.preventDefault();
-        const apifilters = {
+        setError('');
+
+        const apiFilters = {
             ...filters,
-            minPrice: filters.minPrice === '' ? undefined : parseInt(filters.minPrice),
-            maxPrice: filters.maxPrice === '' ? undefined : parseInt(filters.maxPrice),
+            minPrice: filters.minPrice ? parseInt(filters.minPrice) : undefined,
+            maxPrice: filters.maxPrice ? parseInt(filters.maxPrice) : undefined,
         };
-        setProducts(getProducts(apifilters));
+
+        const res = await getProducts(apiFilters);
+
+        if (!res.success) {
+            setError(res.message);
+            return;
+        }
+
+        setProducts(res.data);
     };
 
-    useEffect(async () => {
-        const data = await getProducts();
-        setProducts(data);
+    useEffect(() => {
+        const loadProducts = async () => {
+            const res = await getProducts();
+
+            if (!res.success) {
+                // backend yoksa dummy fallback
+                setProducts(dummyProducts);
+                return;
+            }
+
+            setProducts(res.data);
+        };
+
+        loadProducts();
     }, []);
 
     return (
         <Container maxWidth='lg' sx={{ mt: 6 }}>
             <ProductFilter brands={brands} intensities={intensities} filters={filters} onFilterChange={handleChange} onFilterSubmit={handleFilter} />
-            <ProductCard products={products} />
+
+            {error && (
+                <Typography color='error' mt={2}>
+                    {error}
+                </Typography>
+            )}
+
+            <Box mt={4}>
+                <ProductCard products={products} />
+            </Box>
         </Container>
     );
 }

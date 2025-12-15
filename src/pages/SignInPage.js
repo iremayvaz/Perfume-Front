@@ -1,21 +1,51 @@
 import { useState } from 'react';
-import { Box, TextField, Button, Paper, Typography, InputAdornment, IconButton } from '@mui/material';
-import { Visibility, VisibilityOff, Login } from '@mui/icons-material';
+import { Box, TextField, Button, Paper, Typography, InputAdornment, IconButton, Stack } from '@mui/material';
+import { Visibility, VisibilityOff, Login, PersonAdd } from '@mui/icons-material';
 import { useAuth } from '../auth/AuthContext';
 
 export default function SignInPage() {
-    const { login } = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const { login, register } = useAuth();
+
+    const [isRegister, setIsRegister] = useState(false);
+
+    const [form, setForm] = useState({
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        phoneNum: '',
+    });
+
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
 
-    const handleLogin = async () => {
-        const res = await login(email, password);
+    const handleChange = (field) => (e) => {
+        setForm({ ...form, [field]: e.target.value });
+    };
 
-        if (!res.success) {
-            setError(res.message);
+    const handleLogin = async () => {
+        setError('');
+        const res = await login(form.email, form.password);
+        if (!res.success) setError(res.message);
+    };
+
+    const handleRegister = async () => {
+        setError('');
+
+        if (!/^\d{11}$/.test(form.phoneNum)) {
+            setError('Telefon numarası 11 haneli olmalıdır');
+            return;
         }
+
+        const res = await register({
+            email: form.email,
+            password: form.password,
+            firstName: form.firstName,
+            lastName: form.lastName,
+            phoneNum: form.phoneNum,
+        });
+
+        if (!res.success) setError(res.message);
     };
 
     return (
@@ -29,48 +59,61 @@ export default function SignInPage() {
                 px: 2,
             }}
         >
-            <Paper
-                elevation={4}
-                sx={{
-                    p: 4,
-                    width: '100%',
-                    maxWidth: 400,
-                    borderRadius: 3,
-                }}
-            >
+            <Paper elevation={4} sx={{ p: 4, width: '100%', maxWidth: 420, borderRadius: 3 }}>
                 <Typography variant='h5' fontWeight='bold' mb={1} textAlign='center'>
-                    Hoş Geldiniz
+                    {isRegister ? 'Kayıt Ol' : 'Hoş Geldiniz'}
                 </Typography>
+
                 <Typography variant='body2' mb={3} textAlign='center' color='text.secondary'>
-                    E-ticaret hesabınıza giriş yapın
+                    {isRegister ? 'Yeni hesap oluşturun' : 'E-ticaret hesabınıza giriş yapın'}
                 </Typography>
 
-                <TextField label='Email' fullWidth margin='normal' value={email} onChange={(e) => setEmail(e.target.value)} />
+                <Stack spacing={2}>
+                    <TextField label='Email' fullWidth value={form.email} onChange={handleChange('email')} />
 
-                <TextField
-                    label='Şifre'
-                    fullWidth
-                    margin='normal'
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position='end'>
-                                <IconButton onClick={() => setShowPassword(!showPassword)}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                />
+                    <TextField
+                        label='Şifre'
+                        fullWidth
+                        type={showPassword ? 'text' : 'password'}
+                        value={form.password}
+                        onChange={handleChange('password')}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position='end'>
+                                    <IconButton onClick={() => setShowPassword(!showPassword)}>{showPassword ? <VisibilityOff /> : <Visibility />}</IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+
+                    {isRegister && (
+                        <>
+                            <TextField label='Ad' fullWidth value={form.firstName} onChange={handleChange('firstName')} />
+                            <TextField label='Soyad' fullWidth value={form.lastName} onChange={handleChange('lastName')} />
+                            <TextField label='Telefon Numarası' fullWidth value={form.phoneNum} onChange={handleChange('phoneNum')} inputProps={{ maxLength: 11 }} helperText='11 haneli olmalıdır' />
+                        </>
+                    )}
+                </Stack>
 
                 {error && (
-                    <Typography color='error' mt={1}>
+                    <Typography color='error' mt={2}>
                         {error}
                     </Typography>
                 )}
 
-                <Button variant='contained' fullWidth sx={{ mt: 3, py: 1.2, borderRadius: 2 }} endIcon={<Login />} onClick={handleLogin}>
-                    Giriş Yap
+                <Button variant='contained' fullWidth sx={{ mt: 3, py: 1.2, borderRadius: 2 }} endIcon={isRegister ? <PersonAdd /> : <Login />} onClick={isRegister ? handleRegister : handleLogin}>
+                    {isRegister ? 'Kayıt Ol' : 'Giriş Yap'}
+                </Button>
+
+                <Button
+                    fullWidth
+                    sx={{ mt: 1 }}
+                    onClick={() => {
+                        setIsRegister(!isRegister);
+                        setError('');
+                    }}
+                >
+                    {isRegister ? 'Zaten hesabın var mı? Giriş Yap' : 'Hesabın yok mu? Kayıt Ol'}
                 </Button>
             </Paper>
         </Box>
