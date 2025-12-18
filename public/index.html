@@ -9,7 +9,31 @@
       name="description"
       content="Web site created using create-react-app"
     />
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+      <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+      <script>
+          tailwind.config = {
+              darkMode: "class",
+              theme: {
+                  extend: {
+                      colors: {
+                          primary: "#1565C0",
+                          "header-pink": "#F08AD0",
+                          "background-light": "#EFF4FF",
+                          "background-dark": "#0F172A",
+                          "card-light": "#FFFFFF",
+                          "card-dark": "#1E293B",
+                      },
+                      fontFamily: {
+                          sans: ["Inter", "sans-serif"],
+                      },
+                  },
+              },
+          };
+      </script>
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginAsync as loginApi, registerAsync as registerApi } from '../api/authApi';
+import {getUserInformationAsync, loginAsync as loginApi, registerAsync as registerApi} from '../api/authApi';
 
 const AuthContext = createContext();
 
@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
         }
     }, [user]);
 
-    // 🔐 LOGIN
+    // LOGIN
     const login = async (email, password) => {
         const res = await loginApi({ email, password });
 
@@ -29,8 +29,18 @@ export function AuthProvider({ children }) {
         }
 
         const { accessToken, refreshToken } = res.data;
+        console.log(accessToken, refreshToken)
 
-        const userData = { id: 1, email, accessToken, refreshToken };
+        const informationRes = await getUserInformationAsync(accessToken);
+
+        if(!informationRes.success){
+            return informationRes;
+        }
+
+        console.log(informationRes);
+
+        const { id, email: mail, firstName, lastName} = informationRes.data;
+        const userData = { id, mail, firstName, lastName, accessToken, refreshToken };
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
@@ -39,10 +49,10 @@ export function AuthProvider({ children }) {
         setUser(userData);
         navigate('/');
 
-        return { success: true };
+        return {success: true};
     };
 
-    // 📝 REGISTER
+    // REGISTER
     const register = async (payload) => {
         const res = await registerApi(payload);
 
@@ -51,13 +61,13 @@ export function AuthProvider({ children }) {
         }
 
         navigate('/sign-in');
-        return { success: true };
+        return {success: true};
     };
 
     const logout = () => {
         setUser(null);
         localStorage.clear();
-        navigate('/sign-in');
+        navigate('/');
     };
 
     return <AuthContext.Provider value={{ user, login, register, logout }}>{children}</AuthContext.Provider>;

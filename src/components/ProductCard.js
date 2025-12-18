@@ -1,86 +1,78 @@
-import { Grid, Card, CardContent, Typography, Box, IconButton, Button } from '@mui/material';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import {addToCart} from "../api/cartApi";
+import {useAuth} from "../auth/AuthContext";
 
 function ProductCard({ products = [] }) {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const { user } = useAuth();
 
-  return (
-    <Box>
-      {products.length === 0 && (
-        <Typography variant="body1" sx={{ mt: 2 }}>
-          Hiç ürün yok.
-        </Typography>
-      )}
+    const addAsync = async (productId) => {
+        await addToCart(user.id, {product_id: productId, quantity: 1});
+    }
 
-      <Grid container spacing={3}>
-        {products.map((product) => (
-          <Grid item xs={12} sm={6} md={4} key={product.id}>
-            <Card
-              elevation={2}
-              sx={{
-                borderRadius: 3,
-                overflow: 'hidden',
-                cursor: 'pointer',
-                position: 'relative',
-                transition: '0.3s',
-                '&:hover': { transform: 'translateY(-6px)', boxShadow: 6 }
-              }}
-              onClick={() => navigate(`/product-detail/${product.id}`)}
-            >
-              {/* ÜSTTE FAVORİ BUTON */}
-              <IconButton
-                sx={{
-                  position: 'absolute',
-                  top: 10,
-                  right: 10,
-                  background: '#fff',
-                  '&:hover': { background: '#f0f0f0' }
-                }}
-              >
-                <FavoriteBorderIcon />
-              </IconButton>
+    if (products.length === 0) {
+        return (
+            <div className="text-center text-slate-500 py-10">
+                Hiç ürün bulunamadı.
+            </div>
+        );
+    }
 
-              {/* ÜRÜN RESMİ */}
-              <Box sx={{ height: 200, background: '#fafafa', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <img src={product.image ?? 'https://productimages.hepsiburada.net/s/121/424-600/110000071160168.jpg/format:webp'} alt={product.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-              </Box>
-
-              <CardContent>
-                <b>Rating: {product.rating}</b>
-                {/* ÜRÜN ADI */}
-                <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  <b>{product.brandName}</b>
-                  {product.productName}
-                </Typography>
-
-                {/* FİYAT ALANI */}
-                <Typography variant="h6" color="primary" fontWeight="bold" sx={{ mb: 1 }}>
-                  {product.price} TL
-                </Typography>
-
-                {/* SEPETE EKLE */}
-                <Button
-                  variant="contained"
-                  fullWidth
-                  endIcon={<ShoppingCartIcon />}
-                  sx={{ py: 1.2, borderRadius: 2 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    console.log('Sepete eklendi:', product);
-                  }}
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.map((product) => (
+                <article
+                    key={product.id}
+                    className="bg-card-light dark:bg-card-dark rounded-xl shadow-sm hover:shadow-lg transition duration-300 flex flex-col overflow-hidden border border-slate-100 dark:border-slate-700 group cursor-pointer"
+                    //onClick={() => navigate(`/product-detail/${product.id}`)}
                 >
-                  Sepete Ekle
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
-  );
+                    {/* Ürün Görseli */}
+                    <div className="relative p-6 bg-white flex justify-center items-center h-56">
+                        <button
+                            className="absolute top-3 right-3 text-slate-400 hover:text-red-500 transition z-10"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                console.log('Favoriye eklendi:', product.id);
+                            }}
+                        >
+                            <span className="material-icons-outlined">favorite_border</span>
+                        </button>
+                        <img
+                            alt={product.name}
+                            className="max-h-full object-contain transform group-hover:scale-105 transition duration-500"
+                            src={product.image ?? 'https://productimages.hepsiburada.net/s/121/424-600/110000071160168.jpg/format:webp'}
+                        />
+                    </div>
+
+                    {/* Ürün Detayları */}
+                    <div className="p-4 flex flex-col flex-grow">
+                        <h3 className="font-bold text-slate-800 dark:text-white text-lg mb-1 truncate">
+                            {product.brand} {product.name}
+                        </h3>
+
+                        <div className="flex items-center gap-1 mb-2 text-sm text-yellow-500">
+                            <span className="material-icons text-sm">star</span>
+                            <span className="text-slate-500 dark:text-slate-400">{product.rating || 0}</span>
+                        </div>
+
+                        <div className="mt-auto">
+                            <p className="text-primary font-bold text-xl mb-3">{product.price} TL</p>
+                            <button
+                                className="w-full bg-primary hover:bg-blue-700 text-white font-medium py-2 rounded-lg flex items-center justify-center gap-2 transition shadow-md shadow-blue-200 dark:shadow-none"
+                                onClick={async (e) => {
+                                    await addAsync(product.id);
+                                    console.log('Sepete eklendi:', product);
+                                }}
+                            >
+                                SEPETE EKLE <span className="material-icons-outlined text-sm">shopping_cart</span>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            ))}
+        </div>
+    );
 }
 
 export default ProductCard;

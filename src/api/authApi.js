@@ -5,7 +5,7 @@ export const loginAsync = async (payload) => {
         const res = await axios.post('/login', payload);
         return {
             success: true,
-            data: res.data, // { accessToken, refreshToken }
+            data: res.data,
         };
     } catch (err) {
         return {
@@ -20,6 +20,21 @@ export const registerAsync = async (payload) => {
         await axios.post('/register', payload);
         return {
             success: true,
+        };
+    } catch (err) {
+        return {
+            success: false,
+            message: err.response?.data?.message || 'Kayıt başarısız',
+        };
+    }
+};
+
+export const getUserInformationAsync = async (token) => {
+    try {
+        const res = await axios.get('/me', { headers: {"Authorization" : `Bearer ${token}`} });
+        return {
+            success: true,
+            data: res.data,
         };
     } catch (err) {
         return {

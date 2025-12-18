@@ -10,20 +10,43 @@ import ProtectedRoute from './auth/ProtectedRoute';
 function App() {
     return (
         <Routes>
-            <Route
-                path='/'
-                element={
-                    <ProtectedRoute>
-                        <Layout />
-                    </ProtectedRoute>
-                }
-            >
+            {/* 1. ADIM: Layout artık ProtectedRoute DIŞINDA. */}
+            {/* Böylece giriş yapmayanlar da Header'ı ve Footer'ı görebilir. */}
+            <Route path='/' element={<Layout />}>
+
+                {/* Herkese Açık Sayfalar (Login zorunluluğu yok) */}
                 <Route index element={<HomePage />} />
                 <Route path='product-detail/:id' element={<ProductDetailPage />} />
-                <Route path='cart' element={<CartPage />} />
-                <Route path='orders' element={<OrdersPage />} />
-                <Route path='order-detail/:id' element={<CartPage isOrderHistoryPage={true} />} />
+
+                {/* Sadece Üyelere Özel Sayfalar (ProtectedRoute İÇİNDE) */}
+                {/* Giriş yapmamış biri buraya girmeye çalışırsa Login sayfasına atılır */}
+                <Route
+                    path='cart'
+                    element={
+                        <ProtectedRoute>
+                            <CartPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path='orders'
+                    element={
+                        <ProtectedRoute>
+                            <OrdersPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path='order-detail/:id'
+                    element={
+                        <ProtectedRoute>
+                            <CartPage isOrderHistoryPage={true} />
+                        </ProtectedRoute>
+                    }
+                />
             </Route>
+
+            {/* Login Sayfası */}
             <Route path='sign-in' element={<SignInPage />} />
         </Routes>
     );

@@ -1,56 +1,184 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Container, Box, IconButton, Drawer, List, ListItem, ListItemText, Button } from '@mui/material';
+import { AppBar, Toolbar, Typography, Container, Box, IconButton, InputBase, Badge, Drawer, List, ListItem, ListItemText, Divider, Avatar, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Outlet } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import SearchIcon from '@mui/icons-material/Search';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import PersonIcon from '@mui/icons-material/Person';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from './auth/AuthContext';
 
 export default function Layout() {
     const [open, setOpen] = React.useState(false);
     const navigate = useNavigate();
+    const { user, logout } = useAuth();
+
+    const handleLogout = (e) => {
+        e.stopPropagation(); // Butona tıklanmasını engelle, sadece logout çalışsın
+        setOpen(false);
+        logout();
+    };
+
+    const navigateTo = (path) => {
+        navigate(path);
+        setOpen(false);
+    };
+
+    // Profil butonuna tıklama mantığı
+    const handleProfileClick = () => {
+        if (!user) {
+            console.log("Kullanıcı yok, giriş sayfasına yönlendiriliyor...");
+            navigate('/sign-in');
+        } else {
+            console.log("Kullanıcı zaten giriş yapmış.");
+            // İsterseniz burada '/profile' sayfasına yönlendirme yapabilirsiniz.
+        }
+    };
 
     return (
-        <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f0f4ff 0%, #e8ecf5 100%)' }}>
-            <AppBar position='static' sx={{ background: '#ee94e6ff' }}>
-                <Toolbar>
-                    <IconButton edge='start' color='inherit' onClick={() => setOpen(true)}>
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant='h6' sx={{ flexGrow: 1 }}>
-                        Perfume Store
-                    </Typography>
-                    <Button color='inherit' onClick={() => navigate('/cart')}>
-                        Sepetim
-                    </Button>
+        <Box sx={{ minHeight: '100vh', bgcolor: '#EFF4FF', fontFamily: '"Inter", sans-serif' }}>
+            {/* Header */}
+            <AppBar position='sticky' elevation={1} sx={{ bgcolor: '#F08AD0', color: 'white' }}>
+                <Toolbar sx={{ justifyContent: 'space-between', gap: 2, py: 1 }}>
+
+                    {/* Sol Kısım: Menu + Logo */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <IconButton edge='start' color='inherit' onClick={() => setOpen(true)}>
+                            <MenuIcon />
+                        </IconButton>
+                        <Typography
+                            variant='h6'
+                            component="div"
+                            sx={{ fontWeight: 600, letterSpacing: 0.5, cursor: 'pointer', display: { xs: 'none', sm: 'block' } }}
+                            onClick={() => navigate('/')}
+                        >
+                            Perfume Store
+                        </Typography>
+                    </Box>
+
+                    {/* Orta Kısım: Arama Çubuğu */}
+                    <Box sx={{
+                        flex: 1,
+                        maxWidth: 600,
+                        position: 'relative',
+                        bgcolor: 'rgba(255,255,255,0.9)',
+                        borderRadius: 50,
+                        display: 'flex',
+                        alignItems: 'center',
+                        px: 2,
+                        py: 0.5,
+                        transition: '0.3s',
+                        '&:focus-within': { bgcolor: 'white', boxShadow: 2 }
+                    }}>
+                        <InputBase
+                            placeholder="Ürün, marka veya kategori ara..."
+                            sx={{ ml: 1, flex: 1, color: '#333' }}
+                        />
+                        <SearchIcon sx={{ color: '#888' }} />
+                    </Box>
+
+                    {/* Sağ Kısım: İkonlar */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {/* Sepet Butonu */}
+                        <Button
+                            color='inherit'
+                            onClick={() => navigate('/cart')}
+                            sx={{
+                                textTransform: 'none',
+                                borderRadius: 4,
+                                px: 2,
+                                minWidth: 'auto',
+                                '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }
+                            }}
+                        >
+                            <Typography sx={{ display: { xs: 'none', md: 'block' }, fontWeight: 500, mr: 1 }}>
+                                SEPETİM
+                            </Typography>
+                            <Badge badgeContent={0} color="error">
+                                <ShoppingCartIcon />
+                            </Badge>
+                        </Button>
+
+                        {/* Profil Butonu (Tıklanabilir Alan) */}
+                        <Button
+                            color="inherit"
+                            onClick={handleProfileClick}
+                            sx={{
+                                textTransform: 'none',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                ml: 0.5,
+                                bgcolor: 'rgba(255,255,255,0.2)',
+                                px: 2,
+                                py: 0.8,
+                                borderRadius: 5,
+                                '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
+                            }}
+                        >
+                            <Avatar sx={{ width: 30, height: 30, bgcolor: 'rgba(255,255,255,0.3)' }}>
+                                <PersonIcon sx={{ color: 'white', fontSize: 20 }} />
+                            </Avatar>
+                            <Typography variant="body2" fontWeight={600} sx={{ display: { xs: 'none', lg: 'block' } }}>
+                                {user ? 'Profilim' : 'Giriş Yap'}
+                            </Typography>
+                        </Button>
+
+                        {/* Çıkış Yap Butonu (Sadece giriş yapmışsa görünür) */}
+                        {user && (
+                            <IconButton
+                                color="inherit"
+                                onClick={handleLogout}
+                                title="Çıkış Yap"
+                                sx={{
+                                    ml: 0.5,
+                                    '&:hover': { bgcolor: 'rgba(255,0,0,0.1)' }
+                                }}
+                            >
+                                <LogoutIcon sx={{ transform: 'rotate(180deg)' }} />
+                            </IconButton>
+                        )}
+                    </Box>
                 </Toolbar>
             </AppBar>
 
+            {/* Yan Menü (Drawer) */}
             <Drawer anchor='left' open={open} onClose={() => setOpen(false)}>
-                <Box sx={{ width: 240 }}>
-                    <List>
-                        <ListItem button>
-                            <ListItemText primary='Ana Sayfa' onClick={() => navigate('/')} />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemText primary='Ürünler' onClick={() => navigate('/')} />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemText primary='Sepet' onClick={() => navigate('/cart')} />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemText primary='Siparişlerim' onClick={() => navigate('/orders')} />
-                        </ListItem>
-                        <ListItem button>
-                            <ListItemText primary='Hakkımızda' onClick={() => navigate('/')} />
-                        </ListItem>
+                <Box sx={{ width: 250, display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <Box sx={{ p: 3, bgcolor: '#F08AD0', color: 'white' }}>
+                        <Typography variant="h6" fontWeight="bold">Menü</Typography>
+                        <Typography variant="caption">
+                            {user ? `Merhaba, ${user.firstName || 'Kullanıcı'}` : 'Hoş geldiniz'}
+                        </Typography>
+                    </Box>
+                    <List sx={{ flexGrow: 1 }}>
+                        <ListItem button onClick={() => navigateTo('/')}><ListItemText primary='Ana Sayfa' /></ListItem>
+                        <ListItem button onClick={() => navigateTo('/')}><ListItemText primary='Ürünler' /></ListItem>
+                        <ListItem button onClick={() => navigateTo('/cart')}><ListItemText primary='Sepet' /></ListItem>
+                        {user && <ListItem button onClick={() => navigateTo('/orders')}><ListItemText primary='Siparişlerim' /></ListItem>}
+                        {!user && <ListItem button onClick={() => navigateTo('/sign-in')}><ListItemText primary='Giriş Yap' /></ListItem>}
                     </List>
+                    {user && (
+                        <>
+                            <Divider />
+                            <ListItem button onClick={handleLogout}>
+                                <LogoutIcon color="error" sx={{ mr: 2 }} />
+                                <ListItemText primary='Çıkış Yap' primaryTypographyProps={{ color: 'error', fontWeight: 'bold' }} />
+                            </ListItem>
+                        </>
+                    )}
                 </Box>
             </Drawer>
 
-            <Container maxWidth='lg' sx={{ py: 4 }}>
+            {/* Sayfa İçeriği */}
+            <Container maxWidth='xl' sx={{ py: 4, minHeight: '80vh' }}>
                 <Outlet />
             </Container>
 
-            <Box sx={{ textAlign: 'center', py: 3, color: '#555' }}>© 2025 PerfumeStore — All Rights Reserved</Box>
+            {/* Footer */}
+            <Box component="footer" sx={{ py: 4, bgcolor: 'white', textAlign: 'center', borderTop: '1px solid #e2e8f0', color: '#64748b' }}>
+                <Typography variant="body2">© 2025 Perfume Store. Tüm hakları saklıdır.</Typography>
+            </Box>
         </Box>
     );
 }

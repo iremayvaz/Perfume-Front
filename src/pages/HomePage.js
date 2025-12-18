@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import ProductFilter from '../components/ProductFilter';
-import { Container, Typography, Box } from '@mui/material';
 import { getProducts } from '../api/productApi';
 import { dummyProducts } from '../data/products';
 
@@ -15,10 +14,10 @@ function HomePage() {
 
     const [products, setProducts] = useState([]);
     const [error, setError] = useState('');
-    console.log({ products });
 
-    const brands = [...new Set(products?.map((p) => p.brand))];
-    const intensities = [...new Set(products?.map((p) => p.intensity))];
+    // Ürün listesinden unique marka ve yoğunlukları al
+    const brands = [...new Set(products?.map((p) => p.brand).filter(Boolean))];
+    const intensities = [...new Set(products?.map((p) => p.intensity).filter(Boolean))];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -50,11 +49,9 @@ function HomePage() {
             const res = await getProducts();
 
             if (!res.success) {
-                // backend yoksa dummy fallback
                 setProducts(dummyProducts);
                 return;
             }
-
             setProducts(res.data);
         };
 
@@ -62,19 +59,25 @@ function HomePage() {
     }, []);
 
     return (
-        <Container maxWidth='lg' sx={{ mt: 6 }}>
-            <ProductFilter brands={brands} intensities={intensities} filters={filters} onFilterChange={handleChange} onFilterSubmit={handleFilter} />
+        // HTML tasarımındaki <main> yapısı kullanılıyor
+        <main className="flex-grow max-w-7xl mx-auto px-4 py-8 w-full min-h-screen bg-background-light dark:bg-background-dark">
+
+            <ProductFilter
+                brands={brands}
+                intensities={intensities}
+                filters={filters}
+                onFilterChange={handleChange}
+                onFilterSubmit={handleFilter}
+            />
 
             {error && (
-                <Typography color='error' mt={2}>
-                    {error}
-                </Typography>
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span className="block sm:inline">{error}</span>
+                </div>
             )}
 
-            <Box mt={4}>
-                <ProductCard products={products} />
-            </Box>
-        </Container>
+            <ProductCard products={products} />
+        </main>
     );
 }
 
