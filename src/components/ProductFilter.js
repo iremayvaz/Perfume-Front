@@ -1,6 +1,6 @@
 import React from 'react';
 
-function ProductFilter({ brands, intensities, filters, onFilterChange, onFilterSubmit }) {
+function ProductFilter({ brands, concentrations, topNotes, heartNotes, baseNotes, filters, onFilterChange, onFilterSubmit }) {
     return (
         <section className="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
             <h2 className="text-lg font-bold mb-4 dark:text-white">Ürün Filtresi</h2>
@@ -24,13 +24,58 @@ function ProductFilter({ brands, intensities, filters, onFilterChange, onFilterS
                 <div className="flex flex-col gap-1">
                     <select
                         name="intensity"
-                        value={filters.intensity}
+                        value={filters.concentration}
                         onChange={onFilterChange}
                         className="form-select w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring focus:ring-primary/20 transition h-10"
                     >
                         <option value="">Yoğunluk Seçiniz</option>
-                        {intensities.map((intensity, index) => (
-                            <option key={index} value={intensity}>{intensity}</option>
+                        {concentrations.map((concentration, index) => (
+                            <option key={index} value={concentration}>{concentration}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Top Notes */}
+                <div className="flex flex-col gap-1">
+                    <select
+                        name="topNotes"
+                        value={filters.topNotes}
+                        onChange={onFilterChange}
+                        className="form-select w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring focus:ring-primary/20 transition h-10"
+                    >
+                        <option value="">Nota Seçiniz</option>
+                        {topNotes && topNotes.map((n, index) => (
+                            <option key={index} value={n}>{n}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Heart Notes */}
+                <div className="flex flex-col gap-1">
+                    <select
+                        name="heartNotes"
+                        value={filters.heartNotes}
+                        onChange={onFilterChange}
+                        className="form-select w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring focus:ring-primary/20 transition h-10"
+                    >
+                        <option value="">Nota Seçiniz</option>
+                        {heartNotes && heartNotes.map((n, index) => (
+                            <option key={index} value={n}>{n}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Base Notes */}
+                <div className="flex flex-col gap-1">
+                    <select
+                        name="baseNotes"
+                        value={filters.baseNotes}
+                        onChange={onFilterChange}
+                        className="form-select w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring focus:ring-primary/20 transition h-10"
+                    >
+                        <option value="">Nota Seçiniz</option>
+                        {baseNotes && baseNotes.map((n, index) => (
+                            <option key={index} value={n}>{n}</option>
                         ))}
                     </select>
                 </div>

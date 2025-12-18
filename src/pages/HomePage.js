@@ -7,9 +7,12 @@ import { dummyProducts } from '../data/products';
 function HomePage() {
     const [filters, setFilters] = useState({
         brand: '',
-        intensity: '',
+        concentration: '',
+        topNotes: '',
+        heartNotes: '',
+        baseNotes: '',
         minPrice: '',
-        maxPrice: '',
+        maxPrice: ''
     });
 
     const [products, setProducts] = useState([]);
@@ -17,7 +20,25 @@ function HomePage() {
 
     // Ürün listesinden unique marka ve yoğunlukları al
     const brands = [...new Set(products?.map((p) => p.brand).filter(Boolean))];
-    const intensities = [...new Set(products?.map((p) => p.intensity).filter(Boolean))];
+    const concentrations = [...new Set(products?.map((p) => p.concentration).filter(Boolean))];
+
+    const topNotes = [...new Set(products?.flatMap((p) => {
+        if (Array.isArray(p.topNotes)) return p.topNotes;
+        if (typeof p.topNotes === 'string') return p.topNotes.split(',').map(n => n.trim());
+        return [];
+    }).filter(Boolean))].sort();
+
+    const heartNotes = [...new Set(products?.flatMap((p) => {
+        if (Array.isArray(p.heartNotes)) return p.heartNotes;
+        if (typeof p.heartNotes === 'string') return p.heartNotes.split(',').map(n => n.trim());
+        return [];
+    }).filter(Boolean))].sort();
+
+    const baseNotes = [...new Set(products?.flatMap((p) => {
+        if (Array.isArray(p.baseNotes)) return p.baseNotes;
+        if (typeof p.baseNotes === 'string') return p.baseNotes.split(',').map(n => n.trim());
+        return [];
+    }).filter(Boolean))].sort();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -64,7 +85,10 @@ function HomePage() {
 
             <ProductFilter
                 brands={brands}
-                intensities={intensities}
+                concentrations={concentrations}
+                topNotes={topNotes}
+                heartNotes={heartNotes}
+                baseNotes={baseNotes}
                 filters={filters}
                 onFilterChange={handleChange}
                 onFilterSubmit={handleFilter}
