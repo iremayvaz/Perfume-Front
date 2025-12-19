@@ -1,10 +1,10 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Container, Box, IconButton, InputBase, Badge, Drawer, List, ListItem, ListItemText, Divider, Avatar, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
+import HomeIcon from '@mui/icons-material/Home';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext';
 
@@ -59,6 +59,23 @@ export default function Layout() {
 
                     {/* Sağ Kısım: İkonlar */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {/* Anasayfa Butonu */}
+                        <Button
+                            color='inherit'
+                            onClick={() => navigate('/')}
+                            sx={{
+                                textTransform: 'none',
+                                borderRadius: 4,
+                                px: 2,
+                                minWidth: 'auto',
+                                '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }
+                            }}
+                        >
+                            <Badge badgeContent={0} color="error">
+                                <HomeIcon />
+                            </Badge>
+                        </Button>
+
                         {/* Sepet Butonu */}
                         <Button
                             color='inherit'
