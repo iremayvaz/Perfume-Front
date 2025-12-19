@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import ProductFilter from '../components/ProductFilter';
-import {filterProducts, getProducts} from '../api/productApi';
+import {filterProducts, getFilterOptionsAsync, getProducts} from '../api/productApi';
 import { dummyProducts } from '../data/products';
 
 function HomePage() {
@@ -16,27 +16,13 @@ function HomePage() {
     const [products, setProducts] = useState([]);
     const [error, setError] = useState('');
 
-    // Ürün listesinden unique marka ve yoğunlukları al
-    const brands = [...new Set(products?.map((p) => p.brand).filter(Boolean))];
-    const concentrations = [...new Set(products?.map((p) => p.concentration).filter(Boolean))];
-
-    const topNotes = [...new Set(products?.flatMap((p) => {
-        if (Array.isArray(p.topNotes)) return p.topNotes;
-        if (typeof p.topNotes === 'string') return p.topNotes.split(',').map(n => n.trim());
-        return [];
-    }).filter(Boolean))].sort();
-
-    const heartNotes = [...new Set(products?.flatMap((p) => {
-        if (Array.isArray(p.heartNotes)) return p.heartNotes;
-        if (typeof p.heartNotes === 'string') return p.heartNotes.split(',').map(n => n.trim());
-        return [];
-    }).filter(Boolean))].sort();
-
-    const baseNotes = [...new Set(products?.flatMap((p) => {
-        if (Array.isArray(p.baseNotes)) return p.baseNotes;
-        if (typeof p.baseNotes === 'string') return p.baseNotes.split(',').map(n => n.trim());
-        return [];
-    }).filter(Boolean))].sort();
+    const [filterOptions, setFilterOptions] = useState({
+        brands: [],
+        concentrations: [],
+        topNotes: [],
+        heartNotes: [],
+        baseNotes: []
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -66,6 +52,11 @@ function HomePage() {
                 return;
             }
             setProducts(res.data);
+
+            const optionsRes = await getFilterOptionsAsync();
+            if (optionsRes.success) {
+                setFilterOptions(optionsRes.data);
+            }
         };
 
         loadProducts();
@@ -76,11 +67,11 @@ function HomePage() {
         <main className="flex-grow max-w-7xl mx-auto px-4 py-8 w-full min-h-screen bg-background-light dark:bg-background-dark">
 
             <ProductFilter
-                brands={brands}
-                concentrations={concentrations}
-                topNotes={topNotes}
-                heartNotes={heartNotes}
-                baseNotes={baseNotes}
+                brands={filterOptions.brands}
+                concentrations={filterOptions.concentrations}
+                topNotes={filterOptions.topNotes}
+                heartNotes={filterOptions.heartNotes}
+                baseNotes={filterOptions.baseNotes}
                 filters={filters}
                 onFilterChange={handleChange}
                 onFilterSubmit={handleFilter}

@@ -58,3 +58,12 @@ export const getProductDetail = async (id) => {
         };
     }
 };
+
+export const getFilterOptionsAsync = async () => {
+    try {
+        const res = await axios.get('/perfume/filter-options');
+        return { success: true, data: res.data };
+    } catch (err) {
+        return { success: false, message: 'Filtre seçenekleri alınamadı' };
+    }
+};
