@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import ProductFilter from '../components/ProductFilter';
-import { getProducts } from '../api/productApi';
+import {filterProducts, getProducts} from '../api/productApi';
 import { dummyProducts } from '../data/products';
 
 function HomePage() {
@@ -55,7 +55,7 @@ function HomePage() {
             maxPrice: filters.maxPrice ? parseInt(filters.maxPrice) : undefined,
         };
 
-        const res = await getProducts(apiFilters);
+        const res = await filterProducts(apiFilters);
 
         if (!res.success) {
             setError(res.message);

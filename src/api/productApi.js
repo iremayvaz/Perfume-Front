@@ -17,10 +17,21 @@ export const getProducts = async () => {
 
 export const filterProducts = async (filters = {}) => {
     try {
-        const params = Object.fromEntries(
-            Object.entries(filters).filter(([_, v]) => v != null && v !== '')
-        );
-        const res = await axios.get("/perfume/filter", {params});
+        const activeFilter = Object.entries(filters).find(([_, v]) => v !== '' && v != null);
+
+        let queryParams = {};
+        if (activeFilter) {
+            const [key, value] = activeFilter;
+
+            queryParams = {
+                column: key,
+                content: value
+            };
+        }
+
+        // 2. axios.get içinde params: queryParams şeklinde gönderiyoruz
+        // Axios bunu otomatik olarak ?column=...&content=... formatına sokar
+        const res = await axios.get("/perfume/filter", { params: queryParams });
         return {
             success: true,
             data: res.data,

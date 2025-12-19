@@ -1,4 +1,5 @@
 import React from 'react';
+import {filterProducts} from "../api/productApi";
 
 function ProductFilter({ brands, concentrations, topNotes, heartNotes, baseNotes, filters, onFilterChange, onFilterSubmit }) {
     return (
@@ -23,7 +24,7 @@ function ProductFilter({ brands, concentrations, topNotes, heartNotes, baseNotes
                 {/* Yoğunluk Seçimi */}
                 <div className="flex flex-col gap-1">
                     <select
-                        name="intensity"
+                        name="concentration"
                         value={filters.concentration}
                         onChange={onFilterChange}
                         className="form-select w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring focus:ring-primary/20 transition h-10"
@@ -43,7 +44,7 @@ function ProductFilter({ brands, concentrations, topNotes, heartNotes, baseNotes
                         onChange={onFilterChange}
                         className="form-select w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring focus:ring-primary/20 transition h-10"
                     >
-                        <option value="">Nota Seçiniz</option>
+                        <option value="">Üst Nota Seçiniz</option>
                         {topNotes && topNotes.map((n, index) => (
                             <option key={index} value={n}>{n}</option>
                         ))}
@@ -58,7 +59,7 @@ function ProductFilter({ brands, concentrations, topNotes, heartNotes, baseNotes
                         onChange={onFilterChange}
                         className="form-select w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring focus:ring-primary/20 transition h-10"
                     >
-                        <option value="">Nota Seçiniz</option>
+                        <option value="">Kalp Nota Seçiniz</option>
                         {heartNotes && heartNotes.map((n, index) => (
                             <option key={index} value={n}>{n}</option>
                         ))}
@@ -73,7 +74,7 @@ function ProductFilter({ brands, concentrations, topNotes, heartNotes, baseNotes
                         onChange={onFilterChange}
                         className="form-select w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring focus:ring-primary/20 transition h-10"
                     >
-                        <option value="">Nota Seçiniz</option>
+                        <option value="">Alt Nota Seçiniz</option>
                         {baseNotes && baseNotes.map((n, index) => (
                             <option key={index} value={n}>{n}</option>
                         ))}
@@ -110,6 +111,7 @@ function ProductFilter({ brands, concentrations, topNotes, heartNotes, baseNotes
                 <button
                     type="submit"
                     className="w-full bg-primary hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow transition duration-200 flex items-center justify-center gap-2 h-10"
+
                 >
                     FİLTRELE
                 </button>

@@ -118,9 +118,10 @@ export default function CartPage({ isOrderHistoryPage = false }) {
                 if (res.success) {
                     setOrderInfo(res.data);
 
-                    const mappedItems = res.data.orderItems.map((oi, index) => ({
+                    const mappedItems = res.data.items.map((oi, index) => ({
                         itemId: index, // Detayda ID önemsiz
-                        productName: oi.productName,
+                        brand: oi.brand,
+                        productName: oi.name,
                         quantity: oi.quantity,
                         unitPriceSnapshot: (oi.lineTotal / oi.quantity).toFixed(2),
                         subTotal: oi.lineTotal,
@@ -158,8 +159,8 @@ export default function CartPage({ isOrderHistoryPage = false }) {
                 <Card sx={{ mb: 3, bgcolor: '#f5f5f5' }}>
                     <CardContent>
                         <Typography variant="h6">Sipariş Kodu: {orderInfo.code}</Typography>
-                        <Typography variant="body2">Adres: {orderInfo.shippingCity}, {orderInfo.shippingStreet}</Typography>
-                        <Typography variant="body2">{orderInfo.shippingDetail}</Typography>
+                        <Typography variant="body2">Adres:</Typography>
+                        <Typography variant="body2">{orderInfo.shippingStreet} {orderInfo.shippingDetail} {orderInfo.shippingCity}</Typography>
                     </CardContent>
                 </Card>
             )}
@@ -179,7 +180,7 @@ export default function CartPage({ isOrderHistoryPage = false }) {
                         }}
                     >
                         <CardContent sx={{ flex: 1, p: 0 }}>
-                            <Typography variant='h6'>{item.productName}</Typography>
+                            <Typography variant='h6'>{item.brand} {item.productName}</Typography>
 
                             <Typography variant='body2' color='text.secondary'>
                                 Birim Fiyat: {item.unitPriceSnapshot} {item.currency}
