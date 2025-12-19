@@ -39,8 +39,8 @@ export function AuthProvider({ children }) {
 
         console.log(informationRes);
 
-        const { id, email: mail, firstName, lastName} = informationRes.data;
-        const userData = { id, mail, firstName, lastName, accessToken, refreshToken };
+        const { id, email: mail, firstName, lastName, phoneNumber} = informationRes.data;
+        const userData = { id, mail, firstName, lastName, phoneNumber, accessToken, refreshToken };
 
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
