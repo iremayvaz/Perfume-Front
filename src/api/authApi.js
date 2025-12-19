@@ -43,3 +43,13 @@ export const getUserInformationAsync = async (token) => {
         };
     }
 };
+
+// src/api/authApi.js içinde
+export const refreshTokenApi = async (refreshToken) => {
+    try {
+        const res = await axios.post("/refresh-token", { refreshToken }); // Endpoint'i backend'e göre güncelleyin
+        return res.data; // Yeni access token ve gerekirse yeni refresh token döner
+    } catch (err) {
+        throw err;
+    }
+};

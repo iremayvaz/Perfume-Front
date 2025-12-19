@@ -81,32 +81,6 @@ function ProductFilter({ brands, concentrations, topNotes, heartNotes, baseNotes
                     </select>
                 </div>
 
-                {/* Min Fiyat */}
-                <div className="flex flex-col gap-1 relative">
-                    <input
-                        type="number"
-                        name="minPrice"
-                        value={filters.minPrice}
-                        onChange={onFilterChange}
-                        className="form-input w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring focus:ring-primary/20 transition pr-8 h-10"
-                        placeholder="Min Fiyat"
-                    />
-                    <span className="absolute right-3 top-2.5 text-slate-400 text-xs font-bold">₺</span>
-                </div>
-
-                {/* Max Fiyat */}
-                <div className="flex flex-col gap-1 relative">
-                    <input
-                        type="number"
-                        name="maxPrice"
-                        value={filters.maxPrice}
-                        onChange={onFilterChange}
-                        className="form-input w-full rounded-md border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 focus:border-primary focus:ring focus:ring-primary/20 transition pr-8 h-10"
-                        placeholder="Max Fiyat"
-                    />
-                    <span className="absolute right-3 top-2.5 text-slate-400 text-xs font-bold">₺</span>
-                </div>
-
                 {/* Filtrele Butonu */}
                 <button
                     type="submit"

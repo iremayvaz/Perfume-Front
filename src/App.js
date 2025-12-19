@@ -3,33 +3,27 @@ import CartPage from './pages/CartPage';
 import HomePage from './pages/HomePage';
 import OrdersPage from './pages/OrdersPage';
 import ProductDetailPage from './pages/ProductDetailPage';
-import { Route, Routes } from 'react-router-dom';
+import {Route, Routes} from 'react-router-dom';
 import SignInPage from './pages/SignInPage';
 import ProtectedRoute from './auth/ProtectedRoute';
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
     return (
         <Routes>
-            {/* 1. ADIM: Layout artık ProtectedRoute DIŞINDA. */}
-            {/* Böylece giriş yapmayanlar da Header'ı ve Footer'ı görebilir. */}
-            <Route path='/' element={<Layout />}>
-
-                {/* Herkese Açık Sayfalar (Login zorunluluğu yok) */}
-                <Route index element={<HomePage />} />
-                <Route path='product-detail/:id' element={<ProductDetailPage />} />
-
-                {/* Sadece Üyelere Özel Sayfalar (ProtectedRoute İÇİNDE) */}
-                {/* Giriş yapmamış biri buraya girmeye çalışırsa Login sayfasına atılır */}
+            <Route path='/' element={<Layout/>}>
+                <Route index element={<HomePage/>}/>
+                <Route path='/product-detail/:id' element={<ProductDetailPage/>}/>
                 <Route
-                    path='cart'
+                    path='/cart'
                     element={
                         <ProtectedRoute>
-                            <CartPage />
+                            <CartPage/>
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path='orders'
+                    path='/orders'
                     element={
                         <ProtectedRoute>
                             <OrdersPage />
@@ -37,17 +31,24 @@ function App() {
                     }
                 />
                 <Route
-                    path='order-detail/:id'
+                    path='/order-detail/:id'
                     element={
                         <ProtectedRoute>
                             <CartPage isOrderHistoryPage={true} />
                         </ProtectedRoute>
                     }
                 />
+                <Route
+                    path='/profile'
+                    element={
+                    <ProtectedRoute>
+                        <ProfilePage />
+                    </ProtectedRoute>
+                    }
+                />
             </Route>
 
-            {/* Login Sayfası */}
-            <Route path='sign-in' element={<SignInPage />} />
+            <Route path='/sign-in' element={<SignInPage />} />
         </Routes>
     );
 }

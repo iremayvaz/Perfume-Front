@@ -31,6 +31,7 @@ export default function Layout() {
             navigate('/sign-in');
         } else {
             console.log("Kullanıcı zaten giriş yapmış.");
+            navigate('profile')
             // İsterseniz burada '/profile' sayfasına yönlendirme yapabilirsiniz.
         }
     };
@@ -54,27 +55,6 @@ export default function Layout() {
                         >
                             Perfume Store
                         </Typography>
-                    </Box>
-
-                    {/* Orta Kısım: Arama Çubuğu */}
-                    <Box sx={{
-                        flex: 1,
-                        maxWidth: 600,
-                        position: 'relative',
-                        bgcolor: 'rgba(255,255,255,0.9)',
-                        borderRadius: 50,
-                        display: 'flex',
-                        alignItems: 'center',
-                        px: 2,
-                        py: 0.5,
-                        transition: '0.3s',
-                        '&:focus-within': { bgcolor: 'white', boxShadow: 2 }
-                    }}>
-                        <InputBase
-                            placeholder="Ürün, marka veya kategori ara..."
-                            sx={{ ml: 1, flex: 1, color: '#333' }}
-                        />
-                        <SearchIcon sx={{ color: '#888' }} />
                     </Box>
 
                     {/* Sağ Kısım: İkonlar */}

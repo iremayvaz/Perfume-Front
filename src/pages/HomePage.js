@@ -10,9 +10,7 @@ function HomePage() {
         concentration: '',
         topNotes: '',
         heartNotes: '',
-        baseNotes: '',
-        minPrice: '',
-        maxPrice: ''
+        baseNotes: ''
     });
 
     const [products, setProducts] = useState([]);
@@ -49,13 +47,7 @@ function HomePage() {
         e.preventDefault();
         setError('');
 
-        const apiFilters = {
-            ...filters,
-            minPrice: filters.minPrice ? parseInt(filters.minPrice) : undefined,
-            maxPrice: filters.maxPrice ? parseInt(filters.maxPrice) : undefined,
-        };
-
-        const res = await filterProducts(apiFilters);
+        const res = await filterProducts(filters);
 
         if (!res.success) {
             setError(res.message);

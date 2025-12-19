@@ -3,6 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { loginAsync, registerAsync } from '../api/authApi';
 import { useAuth } from '../auth/AuthContext';
 
+const defaultState = {
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    phoneNum: ''
+};
+
 function SignInPage() {
     const navigate = useNavigate();
     const { login } = useAuth();
@@ -11,17 +19,15 @@ function SignInPage() {
     const [isLoginMode, setIsLoginMode] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
 
-    const [info, setInfo] = useState({
-        email: '',
-        password: '',
-        name: '',
-    });
+    const [info, setInfo] = useState({...defaultState});
 
     const [error, setError] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setInfo((prev) => ({ ...prev, [name]: value }));
+        setInfo((prev) => (
+            { ...prev, [name]: value }
+        ));
     };
 
     const handleSubmit = async (e) => {
@@ -29,14 +35,9 @@ function SignInPage() {
         setError('');
 
         if (isLoginMode) {
-            login(info.email,
-                  info.password);
+            login(info.email, info.password);
         } else {
-            const res = await registerAsync({
-                email: info.email,
-                password: info.password,
-                name: info.name,
-            });
+            const res = await registerAsync({...info});
             if (res.success) {
                 // Kayıt başarılı -> Giriş moduna dön
                 alert('Kayıt başarılı, lütfen giriş yapınız.');
@@ -86,11 +87,29 @@ function SignInPage() {
                             <div className="relative">
                                 <input
                                     className="w-full px-4 py-3.5 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
-                                    id="name"
-                                    name="name"
-                                    placeholder="Ad Soyad"
+                                    id="firstName"
+                                    name="firstName"
+                                    placeholder="Ad"
                                     type="text"
-                                    value={info.name}
+                                    value={info.firstName}
+                                    onChange={handleChange}
+                                    required={!isLoginMode}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {!isLoginMode && (
+                        <div className="space-y-1">
+                            <label className="sr-only" htmlFor="name">İsim</label>
+                            <div className="relative">
+                                <input
+                                    className="w-full px-4 py-3.5 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                    id="lastName"
+                                    name="lastName"
+                                    placeholder="Soyad"
+                                    type="text"
+                                    value={info.lastName}
                                     onChange={handleChange}
                                     required={!isLoginMode}
                                 />
@@ -114,6 +133,24 @@ function SignInPage() {
                             />
                         </div>
                     </div>
+
+                    {!isLoginMode && (
+                        <div className="space-y-1">
+                            <label className="sr-only" htmlFor="name">İsim</label>
+                            <div className="relative">
+                                <input
+                                    className="w-full px-4 py-3.5 bg-white border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200"
+                                    id="phoneNum"
+                                    name="phoneNum"
+                                    placeholder="Telefon Numarası"
+                                    type="text"
+                                    value={info.phoneNum}
+                                    onChange={handleChange}
+                                    required={!isLoginMode}
+                                />
+                            </div>
+                        </div>
+                    )}
 
                     {/* Şifre Alanı */}
                     <div className="space-y-1">
@@ -159,7 +196,7 @@ function SignInPage() {
                             onClick={() => {
                                 setIsLoginMode(!isLoginMode);
                                 setError('');
-                                setInfo({ email: '', password: '', name: '' });
+                                setInfo({ ...defaultState});
                             }}
                             className="text-sm font-medium text-primary hover:text-primary-hover transition-colors uppercase tracking-wide"
                         >
